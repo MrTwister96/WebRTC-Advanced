@@ -44,6 +44,14 @@ io.on("connection", (socket) => {
     socket.on("create-new-room", (data) => {
         createNewRoomHandler(data, socket);
     });
+
+    socket.on("join-room", (data) => {
+        joinRoomHandler(data, socket);
+    });
+
+    socket.on("disconnect", () => {
+        disconnectHandler(socket);
+    });
 });
 
 // Socket IO handlers
@@ -81,6 +89,56 @@ const createNewRoomHandler = (data, socket) => {
     // emit an event to all users connected to that room about
     // new users who are joining the room
     socket.emit("room-update", { connectedUsers: newRoom.connectedUsers });
+};
+
+const joinRoomHandler = (data, socket) => {
+    const { identity, roomId } = data;
+
+    const newUser = {
+        identity,
+        id: uuidv4(),
+        socketId: socket.id,
+        roomId,
+    };
+
+    // Join room as user with room ID
+    const room = rooms.find((room) => room.id === roomId);
+    room.connectedUsers = [...room.connectedUsers, newUser];
+
+    // Join Socket IO Room
+    socket.join(roomId);
+
+    // Push new user to the connectedUsers
+    connectedUsers = [...connectedUsers, newUser];
+
+    io.to(roomId).emit("room-update", { connectedUsers: room.connectedUsers });
+};
+
+const disconnectHandler = (socket) => {
+    // check if user is registered and remove from room and connected users
+    const user = connectedUsers.find((user) => user.socketId === socket.id);
+
+    if (user) {
+        // remove user from room n server
+        const room = rooms.find((room) => room.id === user.roomId);
+
+        room.connectedUsers = room.connectedUsers.filter(
+            (user) => user.socketId !== socket.id
+        );
+
+        // Leave Socket IO room
+        socket.leave(user.roomId);
+
+        // Close the room is ammount of users left over is 0
+        if (room.connectedUsers.length > 0) {
+            // emit event to the rest of users new connected users in room
+            io.to(room.id).emit("room-update", {
+                connectedUsers: room.connectedUsers,
+            });
+        } else {
+            rooms = rooms.filter((r) => r.id !== room.id);
+        }
+    }
 };
 
 server.listen(PORT, () => {
