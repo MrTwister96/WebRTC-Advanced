@@ -1,10 +1,11 @@
 import { setShowOverlay } from "../store/actions";
 import store from "../store/store";
 import * as wss from "./wss";
+import Peer from "simple-peer";
 
 const defaultConstraints = {
     audio: true,
-    video: false,
+    video: true,
 };
 
 let localStream;
@@ -38,4 +39,52 @@ export const getLocalPreviewAndInitRoomConnection = async (
 
 const showLocalVideoPreview = (stream) => {
     // show local video preview
+};
+
+let peers = {};
+let streams = [];
+
+const getConfiguration = () => {
+    return {
+        iceServers: [
+            {
+                urls: "stun:stun.l.google.com:19302",
+            },
+        ],
+    };
+};
+
+const addStream = (stream, connUserSocketId) => {
+    // Display video steam
+};
+
+export const prepareNewPeerConnection = (connUserSocketId, isInitiator) => {
+    const configuration = getConfiguration();
+
+    peers[connUserSocketId] = new Peer({
+        initiator: isInitiator,
+        config: configuration,
+        stream: localStream,
+    });
+
+    peers[connUserSocketId].on("signal", (data) => {
+        const signalData = {
+            signal: data,
+            connUserSocketId: connUserSocketId,
+        };
+
+        wss.signalPeerData(signalData);
+    });
+
+    peers[connUserSocketId].on("stream", (stream) => {
+        console.log("New Stream Received!");
+
+        addStream(stream, connUserSocketId);
+
+        streams = [...streams, stream];
+    });
+};
+
+export const handleSignalingData = ({ signal, connUserSocketId }) => {
+    peers[connUserSocketId].signal(signal);
 };

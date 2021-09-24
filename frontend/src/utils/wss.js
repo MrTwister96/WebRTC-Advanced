@@ -1,6 +1,7 @@
 import io from "socket.io-client";
 import { setparticipants, setRoomId } from "../store/actions";
 import store from "../store/store";
+import * as webRTCHandler from "./webRTCHandler";
 
 const SERVER = "http://localhost:5002";
 
@@ -21,6 +22,20 @@ export const connectWithSocketIOServer = () => {
     socket.on("room-update", ({ connectedUsers }) => {
         store.dispatch(setparticipants(connectedUsers));
     });
+
+    socket.on("conn-prepare", ({ connUserSocketId }) => {
+        webRTCHandler.prepareNewPeerConnection(connUserSocketId, false);
+
+        socket.emit("conn-init", { connUserSocketId });
+    });
+
+    socket.on("conn-signal", (data) => {
+        webRTCHandler.handleSignalingData(data);
+    });
+
+    socket.on("conn-init", ({ connUserSocketId }) => {
+        webRTCHandler.prepareNewPeerConnection(connUserSocketId, true);
+    });
 };
 
 export const createNewRoom = (identity) => {
@@ -40,4 +55,8 @@ export const joinRoom = (identity, roomId) => {
     };
 
     socket.emit("join-room", data);
+};
+
+export const signalPeerData = (signalData) => {
+    socket.emit("conn-signal", signalData);
 };
