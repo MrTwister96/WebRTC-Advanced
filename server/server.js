@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
     socket.on("conn-signal", (signalData) => {
         signalingHandler(signalData, socket);
     });
-    socket.on("conn-signal", (data) => {
+    socket.on("conn-init", (data) => {
         initConnectionHandler(data, socket);
     });
 });
@@ -111,20 +111,20 @@ const joinRoomHandler = (data, socket) => {
     // Join room as user with room ID
     const room = rooms.find((room) => room.id === roomId);
     room.connectedUsers = [...room.connectedUsers, newUser];
-
+    
     // Join Socket IO Room
     socket.join(roomId);
-
+    
     // Push new user to the connectedUsers
     connectedUsers = [...connectedUsers, newUser];
-
+    
     // Emit to all users in room that they should prepare for peer conneciton
     room.connectedUsers.forEach((user) => {
         if (user.socketId !== socket.id) {
             const data = {
                 connUserSocketId: socket.id,
             };
-
+            
             io.to(user.socketId).emit("conn-prepare", data);
         }
     });

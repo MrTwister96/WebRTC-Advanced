@@ -52,13 +52,13 @@ const getConfiguration = () => {
 
 export const prepareNewPeerConnection = (connUserSocketId, isInitiator) => {
     const configuration = getConfiguration();
-
+    
     peers[connUserSocketId] = new Peer({
         initiator: isInitiator,
         config: configuration,
         stream: localStream,
     });
-
+    
     peers[connUserSocketId].on("signal", (data) => {
         const signalData = {
             signal: data,
@@ -106,4 +106,22 @@ const showLocalVideoPreview = (stream) => {
 
 const addStream = (stream, connUserSocketId) => {
     // Display video steam
+    const videosContainer = document.getElementById("videos_portal");
+    const videoContainer = document.createElement("div");
+    videoContainer.id = connUserSocketId;
+
+    videoContainer.classList.add("video_track_container");
+
+    const videoElement = document.createElement("video");
+    videoElement.autoplay = true;
+    videoElement.srcObject = stream;
+    videoElement.id = `${connUserSocketId}-video`;
+
+    videoElement.onloadedmetadata = () => {
+        videoElement.play();
+    };
+
+    videoContainer.appendChild(videoElement);
+    videosContainer.appendChild(videoContainer);
+
 };
