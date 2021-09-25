@@ -111,20 +111,20 @@ const joinRoomHandler = (data, socket) => {
     // Join room as user with room ID
     const room = rooms.find((room) => room.id === roomId);
     room.connectedUsers = [...room.connectedUsers, newUser];
-    
+
     // Join Socket IO Room
     socket.join(roomId);
-    
+
     // Push new user to the connectedUsers
     connectedUsers = [...connectedUsers, newUser];
-    
+
     // Emit to all users in room that they should prepare for peer conneciton
     room.connectedUsers.forEach((user) => {
         if (user.socketId !== socket.id) {
             const data = {
                 connUserSocketId: socket.id,
             };
-            
+
             io.to(user.socketId).emit("conn-prepare", data);
         }
     });
@@ -149,6 +149,9 @@ const disconnectHandler = (socket) => {
 
         // Close the room is ammount of users left over is 0
         if (room.connectedUsers.length > 0) {
+            // Emit to all users still in room that user disconnected
+            io.to(room.id).emit("user-disconnected", { socketId: socket.id });
+
             // emit event to the rest of users new connected users in room
             io.to(room.id).emit("room-update", {
                 connectedUsers: room.connectedUsers,

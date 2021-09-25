@@ -85,6 +85,27 @@ export const handleSignalingData = ({ signal, connUserSocketId }) => {
     peers[connUserSocketId].signal(signal);
 };
 
+export const removePeerConnection = (socketId) => {
+    const videoContainer = document.getElementById(socketId);
+
+    const videoElement = document.getElementById(`${socketId}-video`);
+
+    if (videoContainer && videoElement) {
+        const tracks = videoElement.srcObject.getTracks();
+
+        tracks.forEach((t) => t.stop());
+
+        videoElement.srcObject = null;
+        videoContainer.removeChild(videoElement);
+        videoContainer.parentNode.removeChild(videoContainer);
+
+        if (peers[socketId]) {
+            peers[socketId].destroy();
+        }
+        delete peers[socketId];
+    }
+};
+
 /////////////// UI VIDEOS /////////////
 
 const showLocalVideoPreview = (stream) => {
