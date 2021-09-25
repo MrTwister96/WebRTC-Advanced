@@ -5,7 +5,11 @@ import Peer from "simple-peer";
 
 const defaultConstraints = {
     audio: true,
-    video: true,
+    video: false,
+    // video: {
+    //     width: "480",
+    //     height: "360",
+    // },
 };
 
 let localStream;
@@ -52,13 +56,13 @@ const getConfiguration = () => {
 
 export const prepareNewPeerConnection = (connUserSocketId, isInitiator) => {
     const configuration = getConfiguration();
-    
+
     peers[connUserSocketId] = new Peer({
         initiator: isInitiator,
         config: configuration,
         stream: localStream,
     });
-    
+
     peers[connUserSocketId].on("signal", (data) => {
         const signalData = {
             signal: data,
@@ -121,7 +125,14 @@ const addStream = (stream, connUserSocketId) => {
         videoElement.play();
     };
 
+    videoElement.addEventListener("click", () => {
+        if (videoElement.classList.contains("full_screen")) {
+            videoElement.classList.remove("full_Screen");
+        } else {
+            videoElement.classList.add("full_Screen");
+        }
+    });
+
     videoContainer.appendChild(videoElement);
     videosContainer.appendChild(videoContainer);
-
 };
