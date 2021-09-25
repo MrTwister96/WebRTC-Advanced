@@ -5,7 +5,8 @@ import Peer from "simple-peer";
 
 const defaultConstraints = {
     audio: true,
-    video: false,
+    // video: false,
+    video: true,
     // video: {
     //     width: "480",
     //     height: "360",
@@ -148,9 +149,9 @@ const addStream = (stream, connUserSocketId) => {
 
     videoElement.addEventListener("click", () => {
         if (videoElement.classList.contains("full_screen")) {
-            videoElement.classList.remove("full_Screen");
+            videoElement.classList.remove("full_screen");
         } else {
-            videoElement.classList.add("full_Screen");
+            videoElement.classList.add("full_screen");
         }
     });
 
