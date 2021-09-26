@@ -18,7 +18,6 @@ const NewMessage = () => {
 
     const sendMessage = () => {
         if (message.length > 0) {
-            console.log("Sending message");
             webRTCHandler.sendMessageUsingDataChannel(message);
             setMessage("");
         }
