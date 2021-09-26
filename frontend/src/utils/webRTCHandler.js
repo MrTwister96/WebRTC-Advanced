@@ -5,12 +5,11 @@ import Peer from "simple-peer";
 
 const defaultConstraints = {
     audio: true,
-    // video: false,
     video: true,
-    // video: {
-    //     width: "480",
-    //     height: "360",
-    // },
+};
+const onlyAudioConstraints = {
+    audio: true,
+    video: false,
 };
 
 let localStream;
@@ -18,10 +17,13 @@ let localStream;
 export const getLocalPreviewAndInitRoomConnection = async (
     isRoomHost,
     identity,
-    roomId = null
+    roomId = null,
+    onlyAudio
 ) => {
+    const constraints = onlyAudio ? onlyAudioConstraints : defaultConstraints;
+
     navigator.mediaDevices
-        .getUserMedia(defaultConstraints)
+        .getUserMedia(constraints)
         .then((stream) => {
             console.log("Successfully got local stream");
             localStream = stream;

@@ -9,14 +9,21 @@ import * as webRTCHandler from "../utils/webRTCHandler";
 
 import "./RoomPage.css";
 
-const RoomPage = ({ roomId, identity, isRoomHost, showOverlay }) => {
+const RoomPage = ({
+    roomId,
+    identity,
+    isRoomHost,
+    showOverlay,
+    connectOnlyWithAudio,
+}) => {
     useEffect(() => {
         webRTCHandler.getLocalPreviewAndInitRoomConnection(
             isRoomHost,
             identity,
-            roomId
+            roomId,
+            connectOnlyWithAudio
         );
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, []);
 
     return (
