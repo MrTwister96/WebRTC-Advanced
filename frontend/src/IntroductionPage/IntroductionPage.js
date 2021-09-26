@@ -10,6 +10,7 @@ import "./IntroductionPage.css";
 const IntroductionPage = ({ setIsRoomHostAction }) => {
     useEffect(() => {
         setIsRoomHostAction(false);
+    // eslint-disable-next-line
     }, []);
 
     return (

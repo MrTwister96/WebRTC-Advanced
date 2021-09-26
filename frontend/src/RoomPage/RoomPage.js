@@ -16,6 +16,7 @@ const RoomPage = ({ roomId, identity, isRoomHost, showOverlay }) => {
             identity,
             roomId
         );
+    // eslint-disable-next-line
     }, []);
 
     return (
