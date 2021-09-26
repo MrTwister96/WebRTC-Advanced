@@ -66,6 +66,7 @@ const JoinRoomContent = (props) => {
                 nameValue={nameValue}
                 setNameValue={setNameValue}
                 isRoomHost={isRoomHost}
+                handleJoinRoom={handleJoinRoom}
             />
             <OnlyWithAudioCheckBox
                 setConnectOnlyWithAudio={setConnectOnlyWithAudio}
