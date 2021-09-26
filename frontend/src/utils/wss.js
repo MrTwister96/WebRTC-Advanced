@@ -1,5 +1,5 @@
 import io from "socket.io-client";
-import { setparticipants, setRoomId } from "../store/actions";
+import { setParticipants, setRoomId } from "../store/actions";
 import store from "../store/store";
 import * as webRTCHandler from "./webRTCHandler";
 
@@ -20,7 +20,7 @@ export const connectWithSocketIOServer = () => {
     });
 
     socket.on("room-update", ({ connectedUsers }) => {
-        store.dispatch(setparticipants(connectedUsers));
+        store.dispatch(setParticipants(connectedUsers));
     });
 
     socket.on("conn-prepare", ({ connUserSocketId }) => {

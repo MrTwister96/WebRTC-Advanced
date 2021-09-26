@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import SendMessageButton from "../../resources/images/sendMessageButton.svg";
+import * as webRTCHandler from "../../utils/webRTCHandler";
 
 const NewMessage = () => {
     const [message, setMessage] = useState("");
@@ -18,6 +19,7 @@ const NewMessage = () => {
     const sendMessage = () => {
         if (message.length > 0) {
             console.log("Sending message");
+            webRTCHandler.sendMessageUsingDataChannel(message);
             setMessage("");
         }
     };
