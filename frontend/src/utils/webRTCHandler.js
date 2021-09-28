@@ -2,6 +2,7 @@ import { setShowOverlay, setMessages } from "../store/actions";
 import store from "../store/store";
 import * as wss from "./wss";
 import Peer from "simple-peer";
+import { fetchTURNCredentials, getTURNIceServers } from "./turn";
 
 const defaultConstraints = {
     audio: true,
@@ -20,6 +21,8 @@ export const getLocalPreviewAndInitRoomConnection = async (
     roomId = null,
     onlyAudio
 ) => {
+    await fetchTURNCredentials();
+
     const constraints = onlyAudio ? onlyAudioConstraints : defaultConstraints;
 
     navigator.mediaDevices
@@ -48,13 +51,27 @@ let peers = {};
 let streams = [];
 
 const getConfiguration = () => {
-    return {
-        iceServers: [
-            {
-                urls: "stun:stun.l.google.com:19302",
-            },
-        ],
-    };
+    const turnIceServers = getTURNIceServers();
+
+    if (turnIceServers) {
+        return {
+            iceServers: [
+                {
+                    urls: "stun:stun.l.google.com:19302",
+                },
+                ...turnIceServers,
+            ],
+        };
+    } else {
+        console.warn("Using Only STUN Server!");
+        return {
+            iceServers: [
+                {
+                    urls: "stun:stun.l.google.com:19302",
+                },
+            ],
+        };
+    }
 };
 
 const messengerChannel = "messenger";
@@ -180,6 +197,9 @@ const addStream = (stream, connUserSocketId) => {
 
     if (participant?.onlyAudio) {
         videoContainer.appendChild(getAudioOnlyLabel());
+    } else {
+        //Fixing zoom bug after only audio labels have been added with relative positioning
+        videoContainer.style.position = "static";
     }
 
     videosContainer.appendChild(videoContainer);
