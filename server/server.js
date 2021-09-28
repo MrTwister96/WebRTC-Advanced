@@ -63,9 +63,7 @@ io.on("connection", (socket) => {
 
 // Socket IO handlers
 
-const createNewRoomHandler = (data, socket) => {
-    const { identity } = data;
-
+const createNewRoomHandler = ({ identity, onlyAudio }, socket) => {
     const roomId = uuidv4();
 
     // Create new user object
@@ -74,6 +72,7 @@ const createNewRoomHandler = (data, socket) => {
         id: uuidv4(),
         socketId: socket.id,
         roomId,
+        onlyAudio,
     };
 
     // Push new user to the connectedUsers
@@ -98,14 +97,13 @@ const createNewRoomHandler = (data, socket) => {
     socket.emit("room-update", { connectedUsers: newRoom.connectedUsers });
 };
 
-const joinRoomHandler = (data, socket) => {
-    const { identity, roomId } = data;
-
+const joinRoomHandler = ({ identity, roomId, onlyAudio }, socket) => {
     const newUser = {
         identity,
         id: uuidv4(),
         socketId: socket.id,
         roomId,
+        onlyAudio,
     };
 
     // Join room as user with room ID

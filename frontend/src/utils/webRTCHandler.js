@@ -33,8 +33,8 @@ export const getLocalPreviewAndInitRoomConnection = async (
             store.dispatch(setShowOverlay(false));
 
             isRoomHost
-                ? wss.createNewRoom(identity)
-                : wss.joinRoom(identity, roomId);
+                ? wss.createNewRoom(identity, onlyAudio)
+                : wss.joinRoom(identity, roomId, onlyAudio);
         })
         .catch((err) => {
             console.log(
@@ -137,6 +137,11 @@ const showLocalVideoPreview = (stream) => {
     };
 
     videoContainer.appendChild(videoElement);
+
+    if (store.getState().connectOnlyWithAudio) {
+        videoContainer.appendChild(getAudioOnlyLabel());
+    }
+
     videosContainer.appendChild(videoContainer);
 };
 
@@ -166,7 +171,31 @@ const addStream = (stream, connUserSocketId) => {
     });
 
     videoContainer.appendChild(videoElement);
+
+    // Check if user connected with Audio Only
+    const participants = store.getState().participants;
+    const participant = participants.find(
+        (p) => p.socketId === connUserSocketId
+    );
+
+    if (participant?.onlyAudio) {
+        videoContainer.appendChild(getAudioOnlyLabel());
+    }
+
     videosContainer.appendChild(videoContainer);
+};
+
+const getAudioOnlyLabel = () => {
+    const labelContrainer = document.createElement("div");
+    labelContrainer.classList.add("label_only_audio_container");
+
+    const label = document.createElement("p");
+    label.classList.add("label_only_audio_text");
+    label.innerHTML = "Only Audio";
+
+    labelContrainer.appendChild(label);
+
+    return labelContrainer;
 };
 
 //////////////////// BUTTONS LOGIC ///////////////
