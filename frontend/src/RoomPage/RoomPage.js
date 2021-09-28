@@ -17,12 +17,18 @@ const RoomPage = ({
     connectOnlyWithAudio,
 }) => {
     useEffect(() => {
-        webRTCHandler.getLocalPreviewAndInitRoomConnection(
-            isRoomHost,
-            identity,
-            roomId,
-            connectOnlyWithAudio
-        );
+        if (!isRoomHost && !roomId) {
+            const siteUrl = window.location.origin;
+            window.location.href = siteUrl;
+        } else {
+            webRTCHandler.getLocalPreviewAndInitRoomConnection(
+                isRoomHost,
+                identity,
+                roomId,
+                connectOnlyWithAudio
+            );
+        }
+
         // eslint-disable-next-line
     }, []);
 
