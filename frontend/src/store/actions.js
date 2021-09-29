@@ -6,6 +6,30 @@ const Actions = {
     SET_SHOW_OVERLAY: "SET_SHOW_OVERLAY",
     SET_PARTICIPANTS: "SET_PARTICIPANTS",
     SET_MESSAGES: "SET_MESSAGES",
+    SET_ACTIVE_CONVERSTATION: "SET_ACTIVE_CONVERSTATION",
+    SET_DIRECT_CHAT_HISTORY: "SET_DIRECT_CHAT_HISTORY",
+    SET_SOCKET_ID: "SET_SOCKET_ID",
+};
+
+export const setActiveConversation = (activeConversation) => {
+    return {
+        type: Actions.SET_ACTIVE_CONVERSTATION,
+        activeConversation,
+    };
+};
+
+export const setDirectChatHistory = (directChatHistory) => {
+    return {
+        type: Actions.SET_DIRECT_CHAT_HISTORY,
+        directChatHistory,
+    };
+};
+
+export const setSocketId = (socketId) => {
+    return {
+        type: Actions.SET_SOCKET_ID,
+        socketId,
+    };
 };
 
 export const setIsRoomHost = (isRoomHost) => {
