@@ -10,12 +10,14 @@ const NewMessage = ({ activeConversation, identity }) => {
     };
 
     const sendMessage = () => {
-        wss.sendDirectMessage({
-            receiverSocketId: activeConversation.socketId,
-            identity: identity,
-            messageContent: message,
-        });
-        setMessage("");
+        if (message !== "") {
+            wss.sendDirectMessage({
+                receiverSocketId: activeConversation.socketId,
+                identity: identity,
+                messageContent: message,
+            });
+            setMessage("");
+        }
     };
 
     const handleKeyPressed = (event) => {
