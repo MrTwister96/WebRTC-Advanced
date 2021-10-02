@@ -28,11 +28,16 @@ const JoinRoomContent = (props) => {
     const history = useHistory();
 
     const handleJoinRoom = async () => {
-        setIdentityAction(nameValue);
-        if (isRoomHost) {
-            createRoom();
+        if (nameValue !== "" && !nameValue.startsWith(" ")) {
+            setIdentityAction(nameValue);
+            if (isRoomHost) {
+                createRoom();
+            } else {
+                await joinRoom();
+            }
         } else {
-            await joinRoom();
+            setErrorMessage("Enter valid name!");
+            setNameValue("");
         }
     };
 
