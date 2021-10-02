@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import SendMessageButton from "../../../resources/images/sendMessageButton.svg";
+import * as wss from "../../../utils/wss";
 
 const NewMessage = ({ activeConversation, identity }) => {
     const [message, setMessage] = useState("");
@@ -9,7 +10,12 @@ const NewMessage = ({ activeConversation, identity }) => {
     };
 
     const sendMessage = () => {
-        // Send Message Here
+        wss.sendDirectMessage({
+            receiverSocketId: activeConversation.socketId,
+            identity: identity,
+            messageContent: message,
+        });
+        setMessage("");
     };
 
     const handleKeyPressed = (event) => {

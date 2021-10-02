@@ -1,16 +1,38 @@
 import React from "react";
 import { connect } from "react-redux";
+import { setActiveConversation } from "../../store/actions";
 
-const SingleParticipant = ({ identity, lastItem, participant }) => {
+const SingleParticipant = ({
+    identity,
+    lastItem,
+    participant,
+    setActiveConversationAction,
+    socketId,
+}) => {
+    const handleOpenActiveChatbox = () => {
+        if (participant.socketId !== socketId) {
+            setActiveConversationAction(participant);
+        }
+    };
+
     return (
         <>
-            <p className="participants_paragraph">{identity}</p>
+            <p
+                className="participants_paragraph"
+                onClick={handleOpenActiveChatbox}
+            >
+                {identity}
+            </p>
             {!lastItem && <span className="participants_separator_line"></span>}
         </>
     );
 };
 
-const Participants = ({ participants }) => {
+const Participants = ({
+    participants,
+    socketId,
+    setActiveConversationAction,
+}) => {
     return (
         <div className="participants_container">
             {participants.map((participant, index) => {
@@ -20,6 +42,10 @@ const Participants = ({ participants }) => {
                         lastItem={participants.length === index + 1}
                         participant={participant}
                         identity={participant.identity}
+                        setActiveConversationAction={
+                            setActiveConversationAction
+                        }
+                        socketId={socketId}
                     />
                 );
             })}
@@ -33,4 +59,12 @@ const mapStoreStateToProps = (state) => {
     };
 };
 
-export default connect(mapStoreStateToProps)(Participants);
+const mapActionsToProps = (dispatch) => {
+    return {
+        setActiveConversationAction: (activeConversation) => {
+            dispatch(setActiveConversation(activeConversation));
+        },
+    };
+};
+
+export default connect(mapStoreStateToProps, mapActionsToProps)(Participants);

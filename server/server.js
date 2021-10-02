@@ -77,6 +77,9 @@ io.on("connection", (socket) => {
     socket.on("conn-init", (data) => {
         initConnectionHandler(data, socket);
     });
+    socket.on("direct-message", (data) => {
+        directMessageHandler(data, socket);
+    });
 });
 
 // Socket IO handlers
@@ -192,6 +195,30 @@ const initConnectionHandler = ({ connUserSocketId }, socket) => {
         connUserSocketId: socket.id,
     };
     io.to(connUserSocketId).emit("conn-init", initData);
+};
+
+const directMessageHandler = (data, socket) => {
+    if (
+        connectedUsers.find(
+            (connUser) => connUser.socketId === data.receiverSocketId
+        )
+    ) {
+        const receiverData = {
+            authorSocketId: socket.id,
+            messageContent: data.messageContent,
+            isAuthor: false,
+            identity: data.identity,
+        };
+        socket.to(data.receiverSocketId).emit("direct-message", receiverData);
+
+        const authorData = {
+            receiverSocketId: data.receiverSocketId,
+            messageContent: data.messageContent,
+            isAuthor: true,
+            identity: data.identity,
+        };
+        socket.emit("direct-message", authorData);
+    }
 };
 
 server.listen(PORT, () => {

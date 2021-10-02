@@ -1,6 +1,7 @@
 import io from "socket.io-client";
-import { setParticipants, setRoomId } from "../store/actions";
+import { setParticipants, setRoomId, setSocketId } from "../store/actions";
 import store from "../store/store";
+import { appendNewMessageToChatHistory } from "./directMessages";
 import * as webRTCHandler from "./webRTCHandler";
 
 const SERVER = "http://localhost:5002";
@@ -13,6 +14,7 @@ export const connectWithSocketIOServer = () => {
     socket.on("connect", () => {
         console.log("Successfully connected to Socket IO server");
         console.log(socket.id);
+        store.dispatch(setSocketId(socket.id));
     });
 
     socket.on("room-id", ({ roomId }) => {
@@ -40,6 +42,10 @@ export const connectWithSocketIOServer = () => {
     socket.on("user-disconnected", ({ socketId }) => {
         webRTCHandler.removePeerConnection(socketId);
     });
+
+    socket.on("direct-message", (data) => {
+        appendNewMessageToChatHistory(data);
+    });
 };
 
 export const createNewRoom = (identity, onlyAudio) => {
@@ -65,4 +71,8 @@ export const joinRoom = (identity, roomId, onlyAudio) => {
 
 export const signalPeerData = (signalData) => {
     socket.emit("conn-signal", signalData);
+};
+
+export const sendDirectMessage = (data) => {
+    socket.emit("direct-message", data);
 };
